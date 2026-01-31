@@ -6,7 +6,7 @@ on:
     - cron: '15 13 * * 1-5'
   workflow_dispatch:
 
-# IMPORTANT: allow GitHub Actions to push commits
+# Allow GitHub Actions to push files back to repo
 permissions:
   contents: write
 
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -27,7 +27,9 @@ jobs:
         run: |
           pip install requests
 
-      - name: Download NSE FO bhavcopy
+      - name: Download NSE FO bhavcopy (IST)
+        env:
+          TZ: Asia/Kolkata
         run: |
           python download_bhavcopy.py
 
