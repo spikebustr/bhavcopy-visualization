@@ -2,31 +2,39 @@ name: NSE FO Bhavcopy EOD
 
 on:
   schedule:
-    - cron: '15 13 * * 1-5'   # 6:45 PM IST
+    # 6:45 PM IST, Monday–Friday
+    - cron: '15 13 * * 1-5'
   workflow_dispatch:
+
+# IMPORTANT: allow GitHub Actions to push commits
+permissions:
+  contents: write
 
 jobs:
   download:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: pip install requests
+      - name: Install dependencies
+        run: |
+          pip install requests
 
-    - name: Download bhavcopy
-      run: python download_bhavcopy.py
+      - name: Download NSE FO bhavcopy
+        run: |
+          python download_bhavcopy.py
 
-    - name: Commit data
-      run: |
-        git config --global user.name "nse-eod-bot"
-        git config --global user.email "bot@github.com"
-        git add data/raw
-        git commit -m "EOD FO bhavcopy update" || echo "No changes"
-        git push
+      - name: Commit and push data
+        run: |
+          git config --global user.name "nse-eod-bot"
+          git config --global user.email "bot@github.com"
+          git add data/raw
+          git commit -m "EOD FO bhavcopy update" || echo "No changes to commit"
+          git push
